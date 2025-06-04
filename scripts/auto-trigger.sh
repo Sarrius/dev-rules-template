@@ -60,14 +60,22 @@ detect_ai_assistant() {
         return
     fi
     
+    # Check for GitHub Copilot FIRST (VS Code with Copilot extensions installed)
+    if [ -f "$PROJECT_ROOT/.github/copilot-instructions.md" ] || 
+       ([ -d ~/.vscode/extensions ] && ls ~/.vscode/extensions/ | grep -q "github.copilot" 2>/dev/null) ||
+       (pgrep -f "Visual Studio Code" >/dev/null 2>&1 && [ -d ~/.vscode/extensions ] && ls ~/.vscode/extensions/ | grep -q "github.copilot" 2>/dev/null); then
+        echo "copilot"
+        return
+    fi
+    
     # Check for Google AI Studio indicators
     if [ -f "$PROJECT_ROOT/.google-ai" ] || [ -f "$PROJECT_ROOT/.aistudio" ]; then
         echo "gemini"
         return
     fi
     
-    # Check for Cursor (looks for cursor-specific files or processes)
-    if pgrep -f "Cursor" >/dev/null 2>&1 || [ -f "$PROJECT_ROOT/.cursor-rules" ]; then
+    # Check for Cursor (looks for cursor-specific files or processes, but NOT if VS Code is running)
+    if ! pgrep -f "Visual Studio Code" >/dev/null 2>&1 && (pgrep -f "Cursor" >/dev/null 2>&1 || [ -f "$PROJECT_ROOT/.cursor-rules" ]); then
         echo "cursor"
         return
     fi
@@ -87,12 +95,6 @@ detect_ai_assistant() {
     # Check for Cline (formerly Claude Dev)
     if [ -d "$PROJECT_ROOT/.vscode" ] && grep -q "cline" "$PROJECT_ROOT/.vscode/extensions.json" 2>/dev/null; then
         echo "cline"
-        return
-    fi
-    
-    # Check for GitHub Copilot (project-specific first, then global)
-    if [ -f "$PROJECT_ROOT/.github/copilot-instructions.md" ]; then
-        echo "copilot"
         return
     fi
     
