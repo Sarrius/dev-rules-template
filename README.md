@@ -92,6 +92,19 @@ export DEV_RULES_COPY_DOCS=true
 
 See [INSTALL.md](./INSTALL.md) for detailed installation instructions and customization options.
 
+## Import Examples
+
+For comprehensive examples of how to import these rules into different types of projects, see [IMPORT-GUIDE.md](./IMPORT-GUIDE.md). This includes:
+
+- React/Next.js projects
+- Python/Flask/Django projects  
+- Flutter/Dart projects
+- Firebase projects
+- Team onboarding scripts
+- CI/CD integration
+- Docker containerization
+- Batch setup for multiple projects
+
 ## Customization
 
 The templates can be customized to fit your project's specific needs. See the documentation in each section for customization options.
