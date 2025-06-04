@@ -1,6 +1,50 @@
 #!/bin/bash
 # Auto-trigger script that detects AI assistant and runs appropriate setup
 
+# Default values
+FORCE_RERUN=false
+SILENT_MODE=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --force|-f)
+            FORCE_RERUN=true
+            shift
+            ;;
+        --silent|-s)
+            SILENT_MODE=true
+            shift
+            ;;
+        --help|-h)
+            echo "Usage: $0 [OPTIONS]"
+            echo ""
+            echo "Options:"
+            echo "  --force, -f      Force re-run even if already executed"
+            echo "  --silent, -s     Run in silent mode (minimal output)"
+            echo "  --help, -h       Show this help message"
+            echo ""
+            echo "Environment variables:"
+            echo "  DEV_RULES_FORCE=true     Same as --force"
+            echo "  DEV_RULES_SILENT=true    Same as --silent"
+            exit 0
+            ;;
+        -*)
+            echo "Unknown option $1"
+            exit 1
+            ;;
+    esac
+done
+
+# Check environment variables
+if [ "$DEV_RULES_FORCE" = "true" ]; then
+    FORCE_RERUN=true
+fi
+
+if [ "$DEV_RULES_SILENT" = "true" ]; then
+    SILENT_MODE=true
+fi
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(pwd)"
 TRIGGER_MARKER_DIR="$PROJECT_ROOT/.dev-rules/.triggers"
@@ -10,9 +54,15 @@ mkdir -p "$TRIGGER_MARKER_DIR"
 
 # Function to detect AI assistant
 detect_ai_assistant() {
-    # Check for GitHub Copilot
-    if [ -f "$PROJECT_ROOT/.github/copilot-instructions.md" ] || command -v gh >/dev/null 2>&1; then
-        echo "copilot"
+    # Check for Firebase AI Studio / Gemini first (most specific project indicators)
+    if [ -f "$PROJECT_ROOT/.firebase" ] || [ -f "$PROJECT_ROOT/firebase.json" ] || [ -f "$PROJECT_ROOT/.gemini-rules" ]; then
+        echo "gemini"
+        return
+    fi
+    
+    # Check for Google AI Studio indicators
+    if [ -f "$PROJECT_ROOT/.google-ai" ] || [ -f "$PROJECT_ROOT/.aistudio" ]; then
+        echo "gemini"
         return
     fi
     
@@ -37,6 +87,27 @@ detect_ai_assistant() {
     # Check for Cline (formerly Claude Dev)
     if [ -d "$PROJECT_ROOT/.vscode" ] && grep -q "cline" "$PROJECT_ROOT/.vscode/extensions.json" 2>/dev/null; then
         echo "cline"
+        return
+    fi
+    
+    # Check for GitHub Copilot (project-specific first, then global)
+    if [ -f "$PROJECT_ROOT/.github/copilot-instructions.md" ]; then
+        echo "copilot"
+        return
+    fi
+    
+    # Check for Firebase CLI or related environment variables (with additional context)
+    if command -v firebase >/dev/null 2>&1 || [ -n "$FIREBASE_TOKEN" ] || [ -n "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
+        # Additional check for project context to avoid false positives
+        if [ -f "$PROJECT_ROOT/firebase.json" ] || [ -d "$PROJECT_ROOT/.firebase" ]; then
+            echo "gemini"
+            return
+        fi
+    fi
+    
+    # Global GitHub Copilot check (last resort)
+    if command -v gh >/dev/null 2>&1; then
+        echo "copilot"
         return
     fi
     
@@ -75,18 +146,26 @@ execute_trigger() {
 
 # Main execution
 main() {
-    echo "🔍 Auto-detecting AI assistant..."
+    if [ "$SILENT_MODE" != "true" ]; then
+        echo "🔍 Auto-detecting AI assistant..."
+    fi
     
     AI_TYPE=$(detect_ai_assistant)
-    echo "📋 Detected AI assistant: $AI_TYPE"
+    if [ "$SILENT_MODE" != "true" ]; then
+        echo "📋 Detected AI assistant: $AI_TYPE"
+    fi
     
-    if is_trigger_executed "$AI_TYPE"; then
-        echo "✅ $AI_TYPE trigger already executed. Skipping..."
-        echo "💡 To re-run, delete: $TRIGGER_MARKER_DIR/${AI_TYPE}_triggered"
+    if [ "$FORCE_RERUN" != "true" ] && is_trigger_executed "$AI_TYPE"; then
+        if [ "$SILENT_MODE" != "true" ]; then
+            echo "✅ $AI_TYPE trigger already executed. Skipping..."
+            echo "💡 To re-run, use --force or delete: $TRIGGER_MARKER_DIR/${AI_TYPE}_triggered"
+        fi
         exit 0
     fi
     
-    echo "🎯 First time setup for $AI_TYPE"
+    if [ "$SILENT_MODE" != "true" ]; then
+        echo "🎯 First time setup for $AI_TYPE"
+    fi
     execute_trigger "$AI_TYPE"
 }
 

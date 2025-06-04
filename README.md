@@ -35,8 +35,20 @@ cd dev-rules-template
 ./scripts/auto-trigger.sh
 ```
 
+**Automated/Silent Mode** (no prompts, perfect for CI/CD):
+```bash
+# Full automation - no prompts, copies documentation
+./scripts/auto-trigger.sh --silent
+
+# Force re-run even if already executed
+./scripts/auto-trigger.sh --force
+
+# Environment variables for automation
+DEV_RULES_AUTO=true DEV_RULES_SILENT=true ./scripts/auto-trigger.sh
+```
+
 The auto-trigger system will:
-- Detect which AI assistant you're using (GitHub Copilot, Cursor, Windsurf, Claude Dev, Cline, etc.)
+- Detect which AI assistant you're using (GitHub Copilot, Cursor, Windsurf, Claude Dev, Cline, Firebase AI Studio/Gemini, etc.)
 - Run the appropriate setup script for your environment
 - Create necessary configuration files
 - Mark the setup as completed to avoid duplicate runs
@@ -46,7 +58,25 @@ The auto-trigger system will:
 For manual installation or specific customization:
 
 ```bash
-# Run the installation script manually
+# Interactive mode (prompts for options)
+./scripts/setup-rules.sh /path/to/your/project
+
+# Automated mode (no prompts, copies documentation)
+./scripts/setup-rules.sh --auto /path/to/your/project
+
+# Copy documentation without prompts
+./scripts/setup-rules.sh --copy-docs /path/to/your/project
+
+# Skip documentation copying
+./scripts/setup-rules.sh --no-docs /path/to/your/project
+```
+
+**Environment Variables for Automation:**
+```bash
+# Enable full automation
+export DEV_RULES_AUTO=true
+export DEV_RULES_COPY_DOCS=true
+
 ./scripts/setup-rules.sh /path/to/your/project
 ```
 
@@ -57,6 +87,7 @@ For manual installation or specific customization:
 - **Windsurf**: Creates `.windsurf/rules.md` and configuration
 - **Claude Dev**: Creates `.claude-dev/instructions.md`
 - **Cline**: Creates `.cline/instructions.md`
+- **Firebase AI Studio/Gemini**: Creates `.gemini-rules/` directory with Firebase-specific context
 - **Generic**: Creates `.ai-rules/instructions.md` for any AI assistant
 
 See [INSTALL.md](./INSTALL.md) for detailed installation instructions and customization options.
