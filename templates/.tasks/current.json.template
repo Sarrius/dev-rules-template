@@ -1,0 +1,20 @@
+{
+  "id": "task-id",
+  "title": "Task Title",
+  "description": "Detailed task description",
+  "status": "in-progress",
+  "priority": "medium", 
+  "created": "YYYY-MM-DDThh:mm:ssZ",
+  "category": "feature|bugfix|refactoring|documentation",
+  "files_changed": [
+    "path/to/file1",
+    "path/to/file2"
+  ],
+  "solution": "Brief description of the implemented solution",
+  "patterns_established": {
+    "pattern1": "Description of pattern 1",
+    "pattern2": "Description of pattern 2"
+  },
+  "testing": "Description of testing performed",
+  "rollback": "Instructions for reverting changes if needed"
+}
