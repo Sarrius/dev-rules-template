@@ -17,10 +17,17 @@ mkdir -p "$PROJECT_ROOT/.ai-rules"
 
 # Create generic rules file
 echo "📋 Creating generic AI rules file..."
-cat "$SCRIPT_DIR/../rules"/*.md > "$PROJECT_ROOT/.ai-rules/instructions.md"
 
-# Add generic header
-sed -i '1i# AI Assistant Development Instructions\n\nThese are generic development rules that can be used with any AI coding assistant.\n' "$PROJECT_ROOT/.ai-rules/instructions.md"
+# Create header first, then append rules
+cat > "$PROJECT_ROOT/.ai-rules/instructions.md" << 'EOF'
+# AI Assistant Development Instructions
+
+These are generic development rules that can be used with any AI coding assistant.
+
+EOF
+
+# Append all rules
+cat "$SCRIPT_DIR/../rules"/*.md >> "$PROJECT_ROOT/.ai-rules/instructions.md"
 
 # Setup basic VS Code extensions
 if [ ! -d "$PROJECT_ROOT/.vscode" ]; then
