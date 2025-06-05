@@ -1,37 +1,26 @@
 # Refactoring Guidelines
 
-## Overview
+## REFACTORING GUIDELINES
+- IMPROVE: Existing code without changing behavior
+- REFACTOR: For better readability, maintainability, performance
+- AVOID: Major rewrites unless necessary
 
-This document describes standards for refactoring code safely and effectively.
+## SAFETY-FIRST APPROACH
+NEVER MODIFY ORIGINALS: Create new files with `_refactored` or `_clean` suffix
+PRESERVE SAFETY NET: Keep originals untouched for rollback capability
+SWITCH VIA IMPORTS: Change import path to test refactored version
+GRADUAL MIGRATION: Move screens one at a time when confident
 
-## Core Principles
+## DRASTIC CHANGES POLICY
+CREATE: `filename_clean.dart` for complete rewrites
+CREATE: `filename_refactored.dart` for improved versions
+MAINTAIN: Original file untouched as safety net
+UPDATE: Only imports to switch between versions
+DOCUMENT: Clear migration path in code comments
 
-### Goals of Refactoring
-- **IMPROVE**: Enhance existing code without changing behavior
-- **REFACTOR**: Increase readability, maintainability, and performance
-- **AVOID**: Major rewrites unless absolutely necessary
-
-## Safety-First Approach
-
-### File Preservation
-- **NEVER MODIFY ORIGINALS**: Create new files with `_refactored` or `_clean` suffix
-- **PRESERVE SAFETY NET**: Keep original files untouched for rollback capability
-- **SWITCH VIA IMPORTS**: Change import paths to test refactored versions
-- **GRADUAL MIGRATION**: Move components one at a time when confident
-
-### Naming Conventions
-- `_refactored.{ext}` - Improved version with same interface
-- `_clean.{ext}` - Complete rewrite with simplified architecture  
-- `_state.{ext}` - For state classes with proper copying methods
-
-## Drastic Changes Policy
-
-### New File Creation
-- **CREATE NEW FILES**: Make `filename_clean.{ext}` for complete rewrites
-- **CREATE VARIANTS**: Use `filename_refactored.{ext}` for improved versions
-- **MAINTAIN ORIGINALS**: Keep original file untouched as safety net
-- **UPDATE IMPORTS**: Only change import paths to switch between versions
-- **DOCUMENT CHANGES**: Provide clear migration path in code comments
+## NAMING CONVENTIONS
+- `_refactored.dart` - Improved version with same interface
+- `_clean.dart` - Complete rewrite with simplified architecture
 
 ## Implementation Strategies
 

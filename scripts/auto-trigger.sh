@@ -54,23 +54,11 @@ mkdir -p "$TRIGGER_MARKER_DIR"
 
 # Function to detect AI assistant
 detect_ai_assistant() {
-    # Check for Firebase AI Studio / Gemini first (most specific project indicators)
-    if [ -f "$PROJECT_ROOT/.firebase" ] || [ -f "$PROJECT_ROOT/firebase.json" ] || [ -f "$PROJECT_ROOT/.gemini-rules" ]; then
-        echo "gemini"
-        return
-    fi
-    
     # Check for GitHub Copilot FIRST (VS Code with Copilot extensions installed)
     if [ -f "$PROJECT_ROOT/.github/copilot-instructions.md" ] || 
        ([ -d ~/.vscode/extensions ] && ls ~/.vscode/extensions/ | grep -q "github.copilot" 2>/dev/null) ||
        (pgrep -f "Visual Studio Code" >/dev/null 2>&1 && [ -d ~/.vscode/extensions ] && ls ~/.vscode/extensions/ | grep -q "github.copilot" 2>/dev/null); then
         echo "copilot"
-        return
-    fi
-    
-    # Check for Google AI Studio indicators
-    if [ -f "$PROJECT_ROOT/.google-ai" ] || [ -f "$PROJECT_ROOT/.aistudio" ]; then
-        echo "gemini"
         return
     fi
     
@@ -96,15 +84,6 @@ detect_ai_assistant() {
     if [ -d "$PROJECT_ROOT/.vscode" ] && grep -q "cline" "$PROJECT_ROOT/.vscode/extensions.json" 2>/dev/null; then
         echo "cline"
         return
-    fi
-    
-    # Check for Firebase CLI or related environment variables (with additional context)
-    if command -v firebase >/dev/null 2>&1 || [ -n "$FIREBASE_TOKEN" ] || [ -n "$GOOGLE_APPLICATION_CREDENTIALS" ]; then
-        # Additional check for project context to avoid false positives
-        if [ -f "$PROJECT_ROOT/firebase.json" ] || [ -d "$PROJECT_ROOT/.firebase" ]; then
-            echo "gemini"
-            return
-        fi
     fi
     
     # Global GitHub Copilot check (last resort)

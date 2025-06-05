@@ -79,9 +79,6 @@ Target specific AI assistants directly:
 # Cline
 ./scripts/triggers/cline-trigger.sh /path/to/project
 
-# Firebase AI Studio/Gemini
-./scripts/triggers/gemini-trigger.sh /path/to/project
-
 # Generic (any AI assistant)
 ./scripts/triggers/generic-trigger.sh /path/to/project
 ```
@@ -128,18 +125,21 @@ cd ~/projects/my-flutter-app
 # - Testing guidelines
 ```
 
-### Firebase Project
+### Django Project
 
 ```bash
-cd ~/projects/my-firebase-app
+cd my-django-project
+/path/to/dev-rules-template/scripts/auto-trigger.sh
 
-# Detects firebase.json and creates Firebase AI Studio setup
-~/dev-rules-template/scripts/auto-trigger.sh
+# Cline Project
 
-# Creates:
-# - .gemini-rules/ directory
-# - Firebase-specific context
-# - Cloud Functions patterns
+cd my-cline-project  
+/path/to/dev-rules-template/scripts/auto-trigger.sh
+
+# Generic Project
+
+cd my-generic-project
+/path/to/dev-rules-template/scripts/auto-trigger.sh
 ```
 
 ### Full-Stack Project
